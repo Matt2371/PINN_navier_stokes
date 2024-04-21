@@ -18,7 +18,7 @@ $$h:= \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0$$
 
 where $\rho$ is density and $\nu$ is kinematic viscosity. 
 
-The neural network predicts the x-velocity $u\left(x,y,t\right)$, the y-velocity $v\left(x,y,t\right)$ and the pressure $p\left(x,y,t\right)$ fields. To train the model, we minimize the loss function, L, with components from the data L_{data} and the governing equations L_{PDE} such that
+The neural network predicts the x-velocity $u\left(x,y,t\right)$, the y-velocity $v\left(x,y,t\right)$ and the pressure $p\left(x,y,t\right)$ fields. To train the model, we minimize the loss function, L, with components from the data $L_{data}$ and the governing equations $L_{PDE}$ such that
 
 $$L = L_{data} + L_{PDE}$$
 
