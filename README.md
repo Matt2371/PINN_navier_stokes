@@ -24,31 +24,31 @@ $$L = L_{data} + L_{PDE}$$
 
 The “data” could include the boundary conditions, and/or other known data points. In our example, we reconstruct the entire flow field using sparse measurements, as represented by randomly sampled data points from the cylinder wake dataset. We want to find a solution that reduces the MSE between the prediction and these known data points. For a sample size of $n$, we have
 
-$$L_data = \frac{1}{n}\sum_{i=1}^n\left((\hat{u}_i-u_i)^2 + (\hat{v}_i-v_i)^2 + (\hat{p}_i - p_i)^2\right)$$
+$$L_{data} = \frac{1}{n}\sum_{i=1}^n\left((\hat{u}_i-u_i)^2 + (\hat{v}_i-v_i)^2 + (\hat{p}_i - p_i)^2\right)$$
 
 To find $L_{PDE}$, we differentiate the neural network outputs with respect to position and time as needed, and evaluate the LHS of the partial differential equations $f$, $g$, and $h$. This is done by taking advantage of automatic differentiation (Paszke et al., 2019). The PDE's themselves are enforced when we minimize $L_{PDE}$ to be as close to 0 as possible.
 
 ## Repository Organization
-src/model.py:
+\textbf{src/model.py}:
 
 Defines PINN models in PyTorch. 
 NavierStokesPINN1 (Model 1) implements a PINN as described in (Raissi et al., 2019), with associated loss function NavierStokesPINNLoss1. Continuity is enforced by predicting a latent function $\psi(x,y,t)$ and setting $u=\partial\psi/\partial y$ and $v=-\partial\psi/\partial x$, and pressure is not include in the data MSE.
 
 NavierStokesPINN2 (Model 2) implements a PINN described by the equations above, with associated loss function NavierStokesPINNLoss2. We enforce continuity by using another PDE instead of predicting a latent function, i.e. the neural network predicts u and v directly. Pressure is included in the data MSE.
 
-data/:
+\textbf{data/}:
 
 contains the cylinder wake data and the saved parameters of trained models with naming convention "model{1 or 2}\_{# layers}l\_{hidden size}h\_{# epochs}e.pt"
 
-train_model.py:
+\textbf{train_model.py}:
 
 Defines the feed-forward architecture (number of layers, number of hidden units per layer), collects a random sample (by default, 0.5%) of training data from the full cylinder wake data, and trains the model for a specified number of epochs.
 
-evaluate_model.ipynb:
+\textbf{evaluate_model.ipynb}:
 
 Notebook comparing the predicted and DNS reference flows, including animations of the flow field with time.
 
-PINN_ODE_demo.ipynb:
+\textbf{PINN_ODE_demo.ipynb}:
 
 Notebook demonstrating how to use a PINN to solve an ordinary differential equation (ODE)
 
