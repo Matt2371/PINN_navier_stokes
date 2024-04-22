@@ -104,4 +104,4 @@ def main(hidden_size, num_layers, epochs, model, train_selection):
     return
 
 if __name__ == '__main__':
-    main(hidden_size=30, num_layers=5, epochs=20000, model=2, train_selection='BC')
+    main(hidden_size=30, num_layers=5, epochs=20000, model=2, train_selection=0.0592)

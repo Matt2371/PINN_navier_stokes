@@ -1,6 +1,6 @@
 # Flow Reconstruction using Physics Informed Machine Learning
 ## Overview
-Using physics inspired neural networks (PINN) to solve turbulent flows using the Navier-Stokes equations. Specifically, given sparse observations, we reconstruct the entire flow field, i.e., flow reconstruction. We train and validate our results using direct numerical simulation (DNS) data from (Raissi et al., 2019), which models the vortex shedding in the wake past a cylindrical column at $Re=100$.
+This project is about using physics inspired neural networks (PINN) to solve turbulent flows using the Navier-Stokes equations. Specifically, given sparse observations, we reconstruct the entire flow field, i.e., flow reconstruction. We train and validate our results using direct numerical simulation (DNS) data from (Raissi et al., 2019), which models the wake past a cylindrical column at $Re=100$.
 
 ![](https://github.com/Matt2371/PINN_navier_stokes/blob/main/figures/ref_vs_pred_model2_5l_30h_20000e_0.005d.gif)
 
@@ -24,7 +24,7 @@ The neural network predicts the x-velocity $u\left(x,y,t\right)$, the y-velocity
 
 $$L = L_{data} + L_{PDE}$$
 
-The “data” could include the boundary conditions, and/or other known data points. In our example, we reconstruct the entire flow field using sparse measurements, as represented by randomly sampled data points from the cylinder wake dataset. We want to find a solution that reduces the MSE between the prediction and these known data points. For a sample size of $n$, we have
+The “data” could include the boundary conditions, and/or other known data points. In our example, we reconstruct the entire flow field using sparse measurements, as represented by randomly sampled data points and/or boundary conditions from the cylinder wake dataset. We want to find a solution that reduces the MSE between the prediction and these known data points. For a sample size of $n$, we have
 
 $$L_{data} = \frac{1}{n}\sum_{i=1}^n\left((\hat{u}_i-u_i)^2 + (\hat{v}_i-v_i)^2 + (\hat{p}_i - p_i)^2\right)$$
 
@@ -40,7 +40,7 @@ NavierStokesPINN2 (Model 2) implements a PINN described by the equations above, 
 
 **data/**:
 
-contains the cylinder wake data and the saved parameters of trained models with naming convention "model{1 or 2}\_{# layers}l\_{hidden size}h\_{# epochs}e_{frac of train data or 'BC'}.pt"
+contains the cylinder wake data and the saved parameters of trained models with naming convention "model{1 or 2}\_{# layers}l\_{hidden size}h\_{# epochs}e_{frac of train data or 'BC'}d.pt"
 
 **train_model.py:**
 
