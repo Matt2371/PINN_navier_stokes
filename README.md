@@ -38,7 +38,7 @@ NavierStokesPINN2 (Model 2) implements a PINN described by the equations above, 
 
 data/:
 
-contains the cylinder wake data and the saved parameters of trained models with naming convention "model{1 or 2}_{# layers}l_{hidden size}h_{# epochs}e.pt"
+contains the cylinder wake data and the saved parameters of trained models with naming convention "model{1 or 2}\_{# layers}l\_{hidden size}h\_{# epochs}e.pt"
 
 train_model.py:
 
