@@ -8,20 +8,53 @@ import numpy as np
 import scipy
 from tqdm import tqdm
 
-def main(hidden_size, num_layers, epochs, model):
+def boundary_indices(N, T):
+    """ 
+    Returns a boolean mask marking the boundary condition for all timesteps
+    Params:
+    N - # of data samples (space locations) in problem
+    T - # of timesteps
+    Return:
+    nd-array of shape (N*T, )
+    """
+    # Create grid for one timestep
+    grid_t_0 = np.zeros((50, 100))
+
+    # Set boundary to 1
+    grid_t_0[0, :] = 1
+    grid_t_0[:, 0] = 1
+    grid_t_0[-1, :] = 1
+    grid_t_0[:, -1] = 1
+
+    # Flatten and propagate over T timesteps
+    grid_t_all = np.tile(grid_t_0.reshape(-1, 1), (1, T)) # (N, T)
+    boundary_positions = grid_t_all.astype(bool).flatten()
+
+    # For example:
+    # boundary_positions.reshape(N, T)[:, [t]].reshape(50, 100) is the same as grid_t_0
+    return boundary_positions
+
+def main(hidden_size, num_layers, epochs, model, train_selection):
     """ 
     Params:
     hidden_size - int, # of hidden units for each neural network layer
     num_layers - int, # of neural network layers
     epochs - int, # of training epochs
     model - int, whether to use model 1 (Raissi 2019) or model 2 (continuity PDE)
+    train_selection - float, frac of all data (N*T) to select for training OR 
+                      'BC', select the boundary conditions for training (all timesteps)
     """
     # Load flattened cynlinder wake data
     x_all, y_all, t_all, u_all, v_all, p_all, (N, T) = load_cylinder_wake() # (NT, 1)
 
     # Select training data by random selecting DNS data
-    samples = 5000 # 0.5% of all available data
-    idx = np.random.choice(x_all.shape[0], samples, replace=False)
+    if train_selection == 'BC':
+        idx = boundary_indices(N, T)
+    else:
+        samples = int(round(N * T * train_selection))
+        np.random.seed(0)
+        idx = np.random.choice(x_all.shape[0], samples, replace=False)
+
     x_train = x_all[idx, :]
     y_train = y_all[idx, :]
     t_train = t_all[idx, :]
@@ -67,8 +100,8 @@ def main(hidden_size, num_layers, epochs, model):
     training_loop(epochs=epochs)
 
     # Save trained model
-    torch.save(PINN_model.state_dict(), f'data/model{model}_{num_layers}l_{hidden_size}h_{epochs}e.pt')
+    torch.save(PINN_model.state_dict(), f'data/model{model}_{num_layers}l_{hidden_size}h_{epochs}e_{train_selection}d.pt')
     return
 
 if __name__ == '__main__':
-    main(hidden_size=30, num_layers=5, epochs=100000, model=2)
+    main(hidden_size=30, num_layers=5, epochs=20000, model=2, train_selection='BC')
