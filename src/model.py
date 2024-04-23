@@ -4,7 +4,14 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-
+class SinusoidalActivation(nn.Module):
+    """
+    Sinusoidal activation on the first layer (learning in the sinusoidal space) improves PINN performance, helps
+    escape local minima (Wong, 2022)
+    """
+    def forward(self, x):
+        return torch.sin(2 * torch.pi * x)
+    
 class NavierStokesPINN1(nn.Module):
     def __init__(self, hidden_size, num_layers, nu, rho):
         """
@@ -23,13 +30,15 @@ class NavierStokesPINN1(nn.Module):
         self.hidden_size = hidden_size
         self.num_layers = num_layers
         # Input layer: input size = 3 (x, y, t)
-        layer_list = [nn.Linear(3, self.hidden_size)] 
+        layer_list = [nn.Linear(3, self.hidden_size)]
+        layer_list.append(SinusoidalActivation()) # Sinusoidal activation for first layer
 
         for _ in range(self.num_layers - 2):
             layer_list.append(nn.Linear(self.hidden_size, self.hidden_size)) # Hidden layers
+            layer_list.append(nn.Tanh()) # Tanh ctivation function for hidden layers
         
         # Output layer: output size = 2 (psi, p)
-        layer_list.append(nn.Linear(self.hidden_size, 2)) 
+        layer_list.append(nn.Linear(self.hidden_size, 2))  # No activation for last layer
         self.layers = nn.ModuleList(layer_list) # Save as Module List
 
     def forward(self, x, y, t):
@@ -54,11 +63,10 @@ class NavierStokesPINN1(nn.Module):
         # Feed-forward to calculate pressure and latent psi 
         input_data = torch.hstack([x, y, t]) # (N, 3)
         self.N = input_data.shape[0]
+
         out = input_data # Initialize feed-forward
-        for layer in self.layers[:-1]:
-            out = torch.relu(layer(out)) # No activation for the last layer
-        
-        out = self.layers[-1](out) # Final layer, (N, 2)
+        for layer in self.layers:
+            out = layer(out) # Final layer, (N, 2)
 
         # Seperate psi and pressure p
         psi, p = out[:, [0]], out[:, [1]] # (N, 1) each
@@ -127,12 +135,14 @@ class NavierStokesPINN2(nn.Module):
         self.num_layers = num_layers
         # Input layer: input size = 3 (x, y, t)
         layer_list = [nn.Linear(3, self.hidden_size)] 
+        layer_list.append(SinusoidalActivation()) # Sinusoidal activation for first layer
 
         for _ in range(self.num_layers - 2):
             layer_list.append(nn.Linear(self.hidden_size, self.hidden_size)) # Hidden layers
+            layer_list.append(nn.Tanh()) # Tanh activation for hidden layers
         
         # Output layer: output size = 3 (u, v, p)
-        layer_list.append(nn.Linear(self.hidden_size, 3)) 
+        layer_list.append(nn.Linear(self.hidden_size, 3)) # No activation for last layer
         self.layers = nn.ModuleList(layer_list) # Save as Module List
 
     def forward(self, x, y, t):
@@ -157,11 +167,10 @@ class NavierStokesPINN2(nn.Module):
         # Feed-forward to calculate pressure and latent psi 
         input_data = torch.hstack([x, y, t]) # (N, 3)
         self.N = input_data.shape[0]
-        out = input_data # Initialize feed-forward
-        for layer in self.layers[:-1]:
-            out = torch.relu(layer(out)) # No activation for the last layer
         
-        out = self.layers[-1](out) # Final layer, (N, 3)
+        out = input_data # Initialize feed-forward
+        for layer in self.layers:
+            out = layer(out) # Final layer, (N, 3)
 
         # Seperate psi and pressure p
         u, v, p = out[:, [0]], out[:, [1]], out[:, [2]] # (N, 1) each
