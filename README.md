@@ -1,19 +1,19 @@
 # Flow Reconstruction using Physics Informed Machine Learning
 ## Overview
-This project is about using physics inspired neural networks (PINN) to solve turbulent flows using the Navier-Stokes equations. Specifically, given sparse observations, we reconstruct the entire flow field, i.e., flow reconstruction. We train and validate our results using direct numerical simulation (DNS) data from (Raissi et al., 2019), which models the wake past a cylindrical column at $Re=100$.
+This project is about using physics inspired neural networks (PINN) to solve turbulent flows using the Navier-Stokes equations. Specifically, given sparse observations, we reconstruct the entire flow field, i.e., flow reconstruction. We train and validate our results using direct numerical simulation (DNS) data from (Raissi et al., 2019), which models the wake past a cylindrical column at $`Re=100`$.
 
 ![](https://github.com/Matt2371/PINN_navier_stokes/blob/main/figures/ref_vs_pred_model2_5l_30h_5000e_0.005d.gif)
 
 ## Background
 Neural networks, when their loss functions are modified to conserve physical laws, have shown promise in solving non-linear partial differential equations in physics (Raissi et al., 2019). This has broad application for computational fluid mechanics, such as solving the Navier-Stokes equations, with demonstrated success in a variety of flow scenarios (Cai et al., 2021; Eivazi et al., 2022). Rather than a pure data-driven approach of a statistical model, physics-inspired neural networks (PINN’s) take a hybrid approach by enforcing physics-based knowledge (PDE’s), while also optimizing the loss according to the data. For example, the incompressible 2D-Navier-Stokes equation gives
 
-$'x'$-momentum:
+$`x`$-momentum:
 ```math
 f:= \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} + v\frac{\partial u}{\partial y} + \frac{1}{\rho}\frac{\partial p}{\partial x} -
 \nu\left(\frac{\partial^2u}{\partial x^2} + \frac{\partial^2u}{\partial y^2}\right) = 0
 ```
 
-$'y'$-momentum:
+$`y`$-momentum:
 ```math
 g:= \frac{\partial v}{\partial t} + u\frac{\partial v}{\partial x} + v\frac{\partial v}{\partial y} + \frac{1}{\rho}\frac{\partial p}{\partial x} -
 \nu\left(\frac{\partial^2v}{\partial x^2} + \frac{\partial^2v}{\partial y^2}\right) = 0
@@ -26,9 +26,9 @@ h:= \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0
 ```
 
 
-where $'\rho'$ is density and $'\nu'$ is kinematic viscosity. 
+where $`\rho`$ is density and $`\nu`$ is kinematic viscosity. 
 
-The neural network predicts the x-velocity $'u\left(x,y,t\right)'$, the y-velocity $'v\left(x,y,t\right)'$ and the pressure $'p\left(x,y,t\right)'$ fields. To train the model, we minimize the loss function, $'L'$, with components from the data $'L_{data}'$ and the governing equations $'L_{PDE}'$ such that
+The neural network predicts the x-velocity $`u\left(x,y,t\right)`$, the y-velocity $`v\left(x,y,t\right)`$ and the pressure $`p\left(x,y,t\right)`$ fields. To train the model, we minimize the loss function, $`L`$, with components from the data $`L_{data}`$ and the governing equations $`L_{PDE}`$ such that
 
 ```math
 L = L_{data} + L_{PDE}
@@ -41,7 +41,7 @@ The “data” could include the boundary conditions, and/or other known data po
 L_{data} = \frac{1}{n}\sum_{i=1}^n\left((\hat{u}_i-u_i)^2 + (\hat{v}_i-v_i)^2 + (\hat{p}_i - p_i)^2\right)
 ```
 
-To find $'L_{PDE}'$, we differentiate the neural network outputs with respect to position and time as needed, and evaluate the LHS of the partial differential equations $'f'$, $'g'$, and $'h'$. This is done by taking advantage of automatic differentiation (Paszke et al., 2019). The PDE's themselves are enforced when we minimize $'L_{PDE}'$ to be as close to 0 as possible.
+To find $`L_{PDE}`$, we differentiate the neural network outputs with respect to position and time as needed, and evaluate the LHS of the partial differential equations $`f`$, $`g`$, and $`h`$. This is done by taking advantage of automatic differentiation (Paszke et al., 2019). The PDE's themselves are enforced when we minimize $`L_{PDE}`$ to be as close to 0 as possible.
 
 We consider a feed-forward, fully connected network. We apply a sinusoidal activation function in the first layer, which promotes escaping undesirable local minimums for PINN's and has the added benefit of capturing periodic patterns in the data (Buzaev et al., 2023; Cheng Wong et al., 2022). For the other layers, we use the tanh activation function.
 
@@ -49,7 +49,7 @@ We consider a feed-forward, fully connected network. We apply a sinusoidal activ
 **src/model.py:**
 
 Defines PINN models in PyTorch. 
-NavierStokesPINN1 (Model 1) implements a PINN as described in (Raissi et al., 2019), with associated loss function NavierStokesPINNLoss1. Continuity is enforced by predicting a latent function $'\psi(x,y,t)'$ and setting $'u=\partial\psi/\partial y'$ and $'v=-\partial\psi/\partial x'$, and pressure is not include in the data MSE. Note that Model 1 can only solve pressure up to a constant factor, so its use is deprecated in our case since pressure data is available.
+NavierStokesPINN1 (Model 1) implements a PINN as described in (Raissi et al., 2019), with associated loss function NavierStokesPINNLoss1. Continuity is enforced by predicting a latent function $`\psi(x,y,t)`$ and setting $`u=\partial\psi/\partial y`$ and $`v=-\partial\psi/\partial x`$, and pressure is not include in the data MSE. Note that Model 1 can only solve pressure up to a constant factor, so its use is deprecated in our case since pressure data is available.
 
 NavierStokesPINN2 (Model 2) implements a PINN described by the equations above, with associated loss function NavierStokesPINNLoss2. We enforce continuity by using another PDE instead of predicting a latent function, i.e. the neural network predicts u and v directly. Pressure is included in the data MSE, so Model 2 can solve for the exact pressure.
 
