@@ -74,13 +74,14 @@ Buzaev, F., Gao, J., Chuprov, I., & Kazakov, E. (2023). Hybrid acceleration tech
 
 Cai, S., Mao, Z., Wang, Z., Yin, M., & Karniadakis, G. E. (2021). Physics-informed neural networks (PINNs) for fluid mechanics: a review. Acta Mechanica Sinica, 37(12), 1727–1738. https://doi.org/10.1007/s10409-021-01148-1
 
-Cheng Wong, J., Ooi, C., Gupta, A., & Ong, Y. S. (2022). Supplemental Material: Learning in Sinusoidal Spaces with Physics-Informed Neural Networks. IEEE Transactions on Artificial Intelligence. https://doi.org/10.1109/TAI.2022.3192362
+Cheng Wong, J., Ooi, C., Gupta, A., & Ong, Y. S. (2022). Learning in Sinusoidal Spaces with Physics-Informed Neural Networks. IEEE Transactions on Artificial Intelligence, 5(3). https://doi.org/10.1109/TAI.2022.3192362
 
 Eivazi, H., Tahani, M., Schlatter, P., & Vinuesa, R. (2022). Physics-informed neural networks for solving Reynolds-averaged Navier-Stokes equations. Physics of Fluids, 34(7). https://doi.org/10.1063/5.0095270
 
 Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J., Chanan, G., Killeen, T., Lin, Z., Gimelshein, N., Antiga, L., Desmaison, A., Köpf, A., Yang, E., DeVito, Z., Raison, M., Tejani, A., Chilamkurthy, S., Steiner, B., Fang, L., … Chintala, S. (2019). PyTorch: An Imperative Style, High-Performance Deep Learning Library. 33rd Conference on Neural Information Processing Systems (NeurIPS 2019), 1–12. http://arxiv.org/abs/1912.01703
 
-Raissi, M., Perdikaris, P., & Karniadakis, G. E. (2019). Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations. Journal of Computational Physics, 378, 686–707. https://doi.org/10.1016/j.jcp.2018.10.045
+Raissi, M., Perdikaris, P., & Karniadakis, G. E. (2019). Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations. Journal of Computational Physics, 378(1), 686–707. https://doi.org/10.1016/j.jcp.2018.10.045
+
 
 
 
