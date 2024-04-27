@@ -1,11 +1,11 @@
 # Flow Reconstruction using Physics Informed Machine Learning
 ## Overview
-This project is about using physics inspired neural networks (PINN) to solve turbulent flows using the Navier-Stokes equations. Specifically, given sparse observations, we reconstruct the entire flow field, i.e., flow reconstruction. We train and validate our results using direct numerical simulation (DNS) data from (Raissi et al., 2019), which models the wake past a cylindrical column at $`Re=100`$.
+This project is about using Physics Inspired Neural Networks (PINN) to solve turbulent flows using the Navier-Stokes equations. Specifically, given sparse observations (in this case, a mere 0.05% of the data), the goal is to reconstruct the entire flow field. I train and validate my implementation using direct numerical simulation (DNS) data from (Raissi et al., 2019), which models the wake past a cylindrical column at $`Re=100`$.
 
 ![](https://github.com/Matt2371/PINN_navier_stokes/blob/main/figures/ref_vs_pred_model2_5l_30h_5000e_0.005d.gif)
 
 ## Background
-Neural networks, when their loss functions are modified to conserve physical laws, have shown promise in solving non-linear partial differential equations in physics (Raissi et al., 2019). This has broad application for computational fluid mechanics, such as solving the Navier-Stokes equations, with demonstrated success in a variety of flow scenarios (Cai et al., 2021; Eivazi et al., 2022). Rather than a pure data-driven approach of a statistical model, physics-inspired neural networks (PINN’s) take a hybrid approach by enforcing physics-based knowledge (PDE’s), while also optimizing the loss according to the data. For example, the incompressible 2D-Navier-Stokes equation gives
+Neural networks, when their loss functions are modified to conserve physical laws, have shown promise in solving non-linear partial differential equations in physics (Raissi et al., 2019). This has broad application for computational fluid mechanics, such as solving the Navier-Stokes equations, with demonstrated success in a variety of flow scenarios (Cai et al., 2021; Eivazi et al., 2022). Rather than a pure data-driven approach of a statistical model, physics-inspired neural networks (PINN’s) take a hybrid approach by enforcing physics-based knowledge (PDE’s), while also optimizing the loss according to the data. For example, the unsteady, incompressible 2D-Navier-Stokes equation gives
 
 $`x`$-momentum:
 ```math
@@ -43,7 +43,7 @@ L_{data} = \frac{1}{n}\sum_{i=1}^n\left((\hat{u}_i-u_i)^2 + (\hat{v}_i-v_i)^2 + 
 
 To find $`L_{PDE}`$, we differentiate the neural network outputs with respect to position and time as needed, and evaluate the LHS of the partial differential equations $`f`$, $`g`$, and $`h`$. This is done by taking advantage of automatic differentiation (Paszke et al., 2019). The PDE's themselves are enforced when we minimize $`L_{PDE}`$ to be as close to 0 as possible.
 
-We consider a feed-forward, fully connected network. We apply a sinusoidal activation function in the first layer, which promotes escaping undesirable local minimums for PINN's and has the added benefit of capturing periodic patterns in the data (Buzaev et al., 2023; Cheng Wong et al., 2022). For the other layers, we use the tanh activation function.
+For my implementation, I use a feed-forward, fully connected network. I use a sinusoidal activation function in the first layer, which promotes escaping undesirable local minimums for PINN's and has the added benefit of capturing periodic patterns in the data (Buzaev et al., 2023; Cheng Wong et al., 2022). The tanh activation function is used for the remaining layers.
 
 ## Repository Organization
 **src/model.py:**
@@ -51,7 +51,7 @@ We consider a feed-forward, fully connected network. We apply a sinusoidal activ
 Defines PINN models in PyTorch. 
 NavierStokesPINN1 (Model 1) implements a PINN as described in (Raissi et al., 2019), with associated loss function NavierStokesPINNLoss1. Continuity is enforced by predicting a latent function $`\psi(x,y,t)`$ and setting $`u=\partial\psi/\partial y`$ and $`v=-\partial\psi/\partial x`$, and pressure is not include in the data MSE. Note that Model 1 can only solve pressure up to a constant factor, so its use is deprecated in our case since pressure data is available.
 
-NavierStokesPINN2 (Model 2) implements a PINN described by the equations above, with associated loss function NavierStokesPINNLoss2. We enforce continuity by using another PDE instead of predicting a latent function, i.e. the neural network predicts u and v directly. Pressure is included in the data MSE, so Model 2 can solve for the exact pressure.
+NavierStokesPINN2 (Model 2) implements a PINN described by the equations above, with associated loss function NavierStokesPINNLoss2. Continuity is enforced by using another PDE instead of predicting a latent function, i.e. the neural network predicts u and v directly. Pressure is included in the data MSE, so Model 2 can solve for the exact pressure.
 
 **data/**:
 
