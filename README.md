@@ -1,6 +1,6 @@
 # Flow Reconstruction using Physics Informed Machine Learning
 ## Overview
-This project is about using Physics Inspired Neural Networks (PINN) to solve turbulent flows using the Navier-Stokes equations. Specifically, given sparse observations (in this case, a mere 0.05% of the data), the goal is to reconstruct the entire flow field. I train and validate my implementation using direct numerical simulation (DNS) data from (Raissi et al., 2019), which models the wake past a cylindrical column at $`Re=100`$.
+This project is about using Physics Informed Neural Networks (PINN) to solve unsteady turbulent flows using the Navier-Stokes equations. Specifically, given sparse observations (in this case, a mere 0.05% of the data), the goal is to reconstruct the entire flow field. I train and validate my implementation using direct numerical simulation (DNS) data from (Raissi et al., 2019), which models the wake past a cylindrical column at $`Re=100`$.
 
 ![](https://github.com/Matt2371/PINN_navier_stokes/blob/main/figures/ref_vs_pred_model2_5l_30h_5000e_0.005d.gif)
 
