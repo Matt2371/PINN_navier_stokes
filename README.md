@@ -1,6 +1,6 @@
 # Flow Reconstruction using Physics Informed Machine Learning
 ## Overview
-This project is about using Physics Informed Neural Networks (PINN) to solve unsteady turbulent flows using the Navier-Stokes equations. Specifically, given sparse observations (in this case, a mere 0.05% of the data), the goal is to reconstruct the entire flow field. I train and validate my implementation using direct numerical simulation (DNS) data from (Raissi et al., 2019), which models the wake past a cylindrical column at $`Re=100`$.
+This project is about using Physics Informed Neural Networks (PINN) to solve unsteady turbulent flows using the Navier-Stokes equations. Specifically, given sparse observations (in this case, a mere 0.05% of the data), the goal is to reconstruct the entire flow field. I train and validate using direct numerical simulation (DNS) data from (Raissi et al., 2019), which models the wake past a cylindrical column at $`Re=100`$. My implementation achieves R2 scores of 0.996+ across the reconstructed velocity and pressure vector fields.
 
 ![](https://github.com/Matt2371/PINN_navier_stokes/blob/main/figures/ref_vs_pred_model2_5l_30h_5000e_0.005d.gif)
 
@@ -35,7 +35,7 @@ L = L_{data} + L_{PDE}
 ```
 
 
-The “data” could include the boundary conditions, and/or other known data points. In our example, we reconstruct the entire flow field using sparse measurements, as represented by randomly sampled data points and/or boundary conditions from the cylinder wake dataset. We want to find a solution that reduces the MSE between the prediction and these known data points. For a sample size of $'n'$, we have
+The “data” could include the boundary conditions, and/or other known data points. In our example, we reconstruct the entire flow field using sparse measurements, as represented by 0.5% randomly sampled data points from the cylinder wake dataset. We want to find a solution that reduces the MSE between the prediction and these known data points. For a sample size of $'n'$, we have
 
 ```math
 L_{data} = \frac{1}{n}\sum_{i=1}^n\left((\hat{u}_i-u_i)^2 + (\hat{v}_i-v_i)^2 + (\hat{p}_i - p_i)^2\right)
@@ -49,9 +49,9 @@ For my implementation, I use a feed-forward, fully connected network. I use a si
 **src/model.py:**
 
 Defines PINN models in PyTorch. 
-NavierStokesPINN1 (Model 1) implements a PINN as described in (Raissi et al., 2019), with associated loss function NavierStokesPINNLoss1. Continuity is enforced by predicting a latent function $`\psi(x,y,t)`$ and setting $`u=\partial\psi/\partial y`$ and $`v=-\partial\psi/\partial x`$, and pressure is not include in the data MSE. Note that Model 1 can only solve pressure up to a constant factor, so its use is deprecated in our case since pressure data is available.
+NavierStokesPINN1 (Model 1) implements a PINN faithfully as described in (Raissi et al., 2019), with associated loss function NavierStokesPINNLoss1. Continuity is enforced by predicting a latent function $`\psi(x,y,t)`$ and setting $`u=\partial\psi/\partial y`$ and $`v=-\partial\psi/\partial x`$, and pressure is not include in the data MSE. Note that Model 1 can only solve pressure up to a constant factor, so its use is deprecated in our case since pressure data is available.
 
-NavierStokesPINN2 (Model 2) implements a PINN described by the equations above, with associated loss function NavierStokesPINNLoss2. Continuity is enforced by using another PDE instead of predicting a latent function, i.e. the neural network predicts u and v directly. Pressure is included in the data MSE, so Model 2 can solve for the exact pressure.
+NavierStokesPINN2 (Model 2) implements a PINN described by the equations above, with associated loss function NavierStokesPINNLoss2. This is the main model used in this project. Continuity is enforced by using another PDE instead of predicting a latent function, i.e. the neural network predicts u and v directly. Pressure is included in the data MSE, so Model 2 can solve for the exact pressure.
 
 **data/**:
 
