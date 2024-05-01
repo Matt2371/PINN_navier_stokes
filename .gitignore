@@ -163,3 +163,6 @@ archive/
 
 # Ignore NSF GRFP application files
 nsf_grfp/
+
+# Ignore final presentation and report
+report/
