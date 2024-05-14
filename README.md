@@ -45,8 +45,6 @@ To find $`L_{PDE}`$, we differentiate the neural network outputs with respect to
 
 For my implementation, I use a feed-forward, fully connected network. I use a sinusoidal activation function in the first layer, which promotes escaping undesirable local minimums for PINN's and has the added benefit of capturing periodic patterns in the data (Buzaev et al., 2023; Cheng Wong et al., 2022). The tanh activation function is used for the remaining layers.
 
-![](https://github.com/Matt2371/PINN_navier_stokes/blob/main/figures/PINN_schematic.png)
-
 ## Repository Organization
 **src/model.py:**
 
