@@ -15,7 +15,7 @@ f:= \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} + v\frac{\par
 
 $`y`$-momentum:
 ```math
-g:= \frac{\partial v}{\partial t} + u\frac{\partial v}{\partial x} + v\frac{\partial v}{\partial y} + \frac{1}{\rho}\frac{\partial p}{\partial x} -
+g:= \frac{\partial v}{\partial t} + u\frac{\partial v}{\partial x} + v\frac{\partial v}{\partial y} + \frac{1}{\rho}\frac{\partial p}{\partial y} -
 \nu\left(\frac{\partial^2v}{\partial x^2} + \frac{\partial^2v}{\partial y^2}\right) = 0
 ```
 
@@ -28,20 +28,20 @@ h:= \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0
 
 where $`\rho`$ is density and $`\nu`$ is kinematic viscosity. 
 
-The neural network predicts the x-velocity $`u\left(x,y,t\right)`$, the y-velocity $`v\left(x,y,t\right)`$ and the pressure $`p\left(x,y,t\right)`$ fields. To train the model, we minimize the loss function, $`L`$, with components from the data $`L_{data}`$ and the governing equations $`L_{PDE}`$ such that
+The neural network predicts the x-velocity $`u\left(x,y,t\right)`$, the y-velocity $`v\left(x,y,t\right)`$ and the pressure $`p\left(x,y,t\right)`$ fields. To train the model, we minimize the loss function, $`L`$, with components from the data $`L_{DATA}`$ and the governing equations $`L_{PDE}`$ such that
 
 ```math
-L = L_{data} + L_{PDE}
+L = L_{DATA} + L_{PDE}
 ```
 
 
-The “data” could include the boundary conditions, and/or other known data points. In our example, we reconstruct the entire flow field using sparse measurements, as represented by 0.5% randomly sampled data points from the cylinder wake dataset. We want to find a solution that reduces the MSE between the prediction and these known data points. For a sample size of $'n'$, we have
+The training data can include the boundary/initial conditions, and/or other known data points. In our example, we reconstruct the entire flow field using sparse measurements, as represented by 0.5% randomly sampled data points from the cylinder wake dataset. We want to find a solution that reduces the MSE between the prediction and these known data points. For a sample size of $'n'$, we have
 
 ```math
-L_{data} = \frac{1}{n}\sum_{i=1}^n\left((\hat{u}_i-u_i)^2 + (\hat{v}_i-v_i)^2 + (\hat{p}_i - p_i)^2\right)
+L_{DATA} = \frac{1}{n}\sum_{i=1}^n\left((\hat{u}_i-u_i)^2 + (\hat{v}_i-v_i)^2 + (\hat{p}_i - p_i)^2\right)
 ```
 
-To find $`L_{PDE}`$, we differentiate the neural network outputs with respect to position and time as needed, and evaluate the LHS of the partial differential equations $`f`$, $`g`$, and $`h`$. This is done by taking advantage of automatic differentiation (Paszke et al., 2019). The PDE's themselves are enforced when we minimize $`L_{PDE}`$ to be as close to 0 as possible.
+To find $`L_{PDE}`$, we differentiate the neural network outputs with respect to position and time as needed, and evaluate the LHS of the partial differential equations $`f`$, $`g`$, and $`h`$. This is done by taking advantage of automatic differentiation (Paszke et al., 2019). The PDE's themselves are enforced when we minimize $`L_{PDE}`$ to be as close to 0 as possible. In a sense, $`L_{PDE}`$ is an unsupervised loss function, since it does not require knowledge of the true velocities or pressure.
 
 For my implementation, I use a feed-forward, fully connected network. I use a sinusoidal activation function in the first layer, which promotes escaping undesirable local minimums for PINN's and has the added benefit of capturing periodic patterns in the data (Buzaev et al., 2023; Cheng Wong et al., 2022). The tanh activation function is used for the remaining layers.
 
