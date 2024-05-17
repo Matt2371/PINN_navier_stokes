@@ -44,7 +44,7 @@ L_{DATA} = \frac{1}{n}\sum_{i=1}^n\left((\hat{u}_i-u_i)^2 + (\hat{v}_i-v_i)^2 + 
 To find $`L_{PDE}`$, we differentiate the neural network outputs with respect to position and time as needed, and evaluate the LHS of the partial differential equations $`f`$, $`g`$, and $`h`$. This is done by taking advantage of automatic differentiation (Paszke et al., 2019). The PDE's themselves are enforced when we minimize $`L_{PDE}`$ to be as close to 0 as possible. In a sense, $`L_{PDE}`$ is an unsupervised loss function, since it does not require knowledge of the true velocities or pressure.
 
 ```math
-L_{PDE} = \frac{1}{n}(||f||_2^2 + ||g||_2^2 + ||h||_2^2)
+L_{PDE} = \frac{1}{n}\left(||f||_2^2 + ||g||_2^2 + ||h||_2^2\right)
 ```
 
 For my implementation, I use a feed-forward, fully connected network. I use a sinusoidal activation function in the first layer, which promotes escaping undesirable local minimums for PINN's and has the added benefit of capturing periodic patterns in the data (Buzaev et al., 2023; Cheng Wong et al., 2022). The tanh activation function is used for the remaining layers.
